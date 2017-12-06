@@ -3,7 +3,7 @@ package com.toolsoft.model;
 import com.google.auto.value.AutoValue;
 
 /**
- * Stores the information of a touristic attraction such as id, name, address and rating.
+ * Stores the information of a touristic attraction such as: id, name, address and rating.
  */
 @AutoValue
 public abstract class TouristAttraction {
