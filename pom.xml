@@ -17,6 +17,12 @@
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <appengine.sdk.version>1.9.59</appengine.sdk.version>
     <archiveClasses>true</archiveClasses>
+    <!-- CloudSQL -->
+    <INSTANCE_CONNECTION_NAME>hotelbackend:us-central1:hoteldb</INSTANCE_CONNECTION_NAME>
+    <user>root</user>
+    <password>98329973</password>
+    <database>HotelAdvisor</database>
+    <sqlURL>jdbc:mysql://google/${database}?cloudSqlInstance=${INSTANCE_CONNECTION_NAME}&amp;socketFactory=com.google.cloud.sql.mysql.SocketFactory&amp;user=${user}&amp;password=${password}&amp;useSSL=false</sqlURL>
   </properties>
 
   <prerequisites>
@@ -48,9 +54,14 @@
       <version>1.5.2</version>
     </dependency>
     <dependency>
+      <groupId>com.google.api-client</groupId>
+      <artifactId>google-api-client-appengine</artifactId>
+      <version>1.23.0</version>
+    </dependency>
+    <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>6.0.5</version>
+      <version>6.0.6</version>
     </dependency>
     <dependency>
       <groupId>com.google.cloud.sql</groupId>
@@ -82,7 +93,7 @@
     <dependency>
       <groupId>com.google.truth</groupId>
       <artifactId>truth</artifactId>
-      <version>0.33</version>
+      <version>0.36</version>
       <scope>test</scope>
     </dependency>
 
@@ -101,6 +112,12 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <!-- for hot reload of the web application-->
     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
     <plugins>
