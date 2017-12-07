@@ -1,12 +1,12 @@
 package com.toolsoft.api;
 
 import java.io.IOException;
-import javax.servlet.annotation.WebServlet;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "HotelInfoApi", value = "/hotelInfo")
+@Singleton
 public class HotelInfo extends HttpServlet {
 
   @Override
