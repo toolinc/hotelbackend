@@ -1,15 +1,14 @@
 package com.toolsoft.inject;
 
-import com.google.inject.servlet.ServletModule;
-import com.toolsoft.api.HotelInfo;
+import com.google.inject.AbstractModule;
 
 /**
- * Defines the dependency injection for the back end module.
+ * Specifies the required instances that need to be injected into the classes.
  */
-public class HotelModule extends ServletModule {
+public class HotelModule extends AbstractModule {
 
   @Override
-  protected void configureServlets() {
-    serve("/hotelInfo").with(HotelInfo.class);
+  protected void configure() {
+
   }
 }
