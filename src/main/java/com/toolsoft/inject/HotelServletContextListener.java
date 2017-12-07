@@ -15,6 +15,6 @@ public class HotelServletContextListener extends GuiceServletContextListener {
 
   @Override
   protected Injector getInjector() {
-    return Guice.createInjector(new HotelServletModule());
+    return Guice.createInjector(new HotelServletModule(), new HotelModule());
   }
 }
