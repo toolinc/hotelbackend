@@ -16,8 +16,6 @@ public abstract class Hotel implements Comparable<Hotel> {
 
   public abstract Address address();
 
-  public abstract double averageRating();
-
   /**
    * Compare hotels based on the name (alphabetically). May use compareTo method in class String. If
    * the names are the same, compare based on the hotel ids.
@@ -52,8 +50,6 @@ public abstract class Hotel implements Comparable<Hotel> {
     public abstract Builder setName(String name);
 
     public abstract Builder setAddress(Address address);
-
-    public abstract Builder setAverageRating(double averageRating);
 
     public abstract Hotel build();
   }

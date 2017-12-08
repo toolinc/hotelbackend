@@ -1,10 +1,13 @@
 package com.toolsoft.api;
 
+import com.google.common.collect.ImmutableList;
+import com.google.gson.Gson;
+import com.toolsoft.model.Address;
+import com.toolsoft.model.Hotel;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
@@ -26,47 +29,30 @@ public class HotelInfo extends HttpServlet {
     response.setHeader("Access-Control-Allow-Origin", "*");
 
     final String selectSql = "SELECT * FROM Hotels";
+    ImmutableList.Builder<Hotel> hotels = ImmutableList.builder();
     PrintWriter out = response.getWriter();
     try (ResultSet rs = dataSource.getConnection().prepareStatement(selectSql).executeQuery()) {
       while (rs.next()) {
-        String name = rs.getString("name");
-        String city = rs.getString("city");
-        out.print("Name: " + name + " city: " + city + "\n");
+        Address address = Address.builder()
+            .setStreetAddress(rs.getString("streetAddress"))
+            .setCity(rs.getString("city"))
+            .setState(rs.getString("state"))
+            .setLat(rs.getDouble("lat"))
+            .setLon(rs.getDouble("lon"))
+            .build();
+        hotels.add(
+            Hotel
+                .builder()
+                .setId(rs.getString("hotelId"))
+                .setName(rs.getString("name"))
+                .setAddress(address)
+                .build());
       }
     } catch (SQLException e) {
       throw new ServletException("SQL error", e);
     }
 
-    response.getWriter().println("[{\n"
-        + "\"success\":true,\n"
-        + "\"hotelId\":\"1\",\n"
-        + "\"name\":\"Hilton San Francisco Union Square\",\n"
-        + "\"rating\":\"2.45\",\n"
-        + "\"addr\":\"333 O'Farrell St.\",\n"
-        + "\"city\":\"San Francisco\",\n"
-        + "\"state\":\"CA\",\n"
-        + "\"lat\":\"37.78616\",\n"
-        + "\"lng\":\"-122.41018\"\n"
-        + "},{\n"
-        + "\"success\":true,\n"
-        + "\"hotelId\":\"2\",\n"
-        + "\"name\":\"Parc 55 San Francisco - A Hilton Hotel\",\n"
-        + "\"rating\":\"3.36\",\n"
-        + "\"addr\":\"55 Cyril Magnin St\",\n"
-        + "\"city\":\"San Francisco\",\n"
-        + "\"state\":\"CA\",\n"
-        + "\"lat\":\"37.78458\",\n"
-        + "\"lng\":\"-122.40854\"\n"
-        + "},{\n"
-        + "\"success\":true,\n"
-        + "\"hotelId\":\"3\",\n"
-        + "\"name\":\"Travelodge San Francisco Airport-North\",\n"
-        + "\"rating\":\"3.32\",\n"
-        + "\"addr\":\"326 S Airport Blvd\",\n"
-        + "\"city\":\"South San Francisco\",\n"
-        + "\"state\":\"CA\",\n"
-        + "\"lat\":\"37.645129\",\n"
-        + "\"lng\":\"-122.40492\"\n"
-        + "}]");
+    Gson gson = new Gson();
+    out.print(gson.toJson(hotels.build()));
   }
 }
