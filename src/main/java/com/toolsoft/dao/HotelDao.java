@@ -15,6 +15,11 @@ public interface HotelDao {
   List<Hotel> getAll();
 
   /**
+   * Provides all the {@link Hotel} in a city stores on the database.
+   */
+  List<Hotel> getHotelsRatingByCity(String city);
+
+  /**
    * Provides a specific {@link Hotel} from the database.
    */
   Optional<Hotel> getHotel(String id);
