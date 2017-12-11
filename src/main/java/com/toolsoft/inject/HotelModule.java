@@ -3,8 +3,11 @@ package com.toolsoft.inject;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.toolsoft.api.Login;
 import com.toolsoft.dao.HotelDao;
 import com.toolsoft.dao.HotelDaoSql;
+import com.toolsoft.dao.LoginDao;
+import com.toolsoft.dao.LoginDaoSql;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import javax.sql.DataSource;
@@ -20,6 +23,7 @@ public class HotelModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(HotelDao.class).to(HotelDaoSql.class);
+    bind(LoginDao.class).to(LoginDaoSql.class);
   }
 
   @Provides
