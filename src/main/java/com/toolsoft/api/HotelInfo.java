@@ -1,5 +1,7 @@
 package com.toolsoft.api;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.gson.Gson;
 import com.toolsoft.dao.HotelDao;
 import java.io.IOException;
@@ -12,10 +14,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Singleton
-public class HotelInfo extends HttpServlet {
+public final class HotelInfo extends HttpServlet {
+
+  private final HotelDao hotelDao;
 
   @Inject
-  private HotelDao hotelDao;
+  public HotelInfo(HotelDao hotelDao) {
+    this.hotelDao = checkNotNull(hotelDao);
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)

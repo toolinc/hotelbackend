@@ -11,11 +11,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 
 /**
  * Data Access Object to work with {@link Hotel} instances in a RDBMS.
  */
+@Singleton
 public final class HotelDaoSql implements HotelDao {
 
   private static final String ALL_SQL = "SELECT * FROM Hotels";
@@ -23,7 +25,7 @@ public final class HotelDaoSql implements HotelDao {
   private final DataSource dataSource;
 
   @Inject
-  HotelDaoSql(DataSource dataSource) {
+  public HotelDaoSql(DataSource dataSource) {
     this.dataSource = checkNotNull(dataSource);
   }
 
