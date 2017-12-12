@@ -35,6 +35,7 @@ public final class HotelInfo extends HttpServlet {
       throws IOException, ServletException {
     String city = city = StringEscapeUtils.escapeHtml4(request.getParameter(CITY));
     String version = request.getParameter(API);
+    response.setContentType(JSON);
     response.setHeader("Access-Control-Allow-Origin", "*");
     List<Hotel> hotels = hotelDao.getHotelsRatingByCity(city);
     if (Strings.isNullOrEmpty(version)) {
