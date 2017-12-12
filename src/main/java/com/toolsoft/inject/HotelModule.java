@@ -2,7 +2,6 @@ package com.toolsoft.inject;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.toolsoft.cache.HotelCacheThreadSafe;
 import com.toolsoft.cache.ReentrantReadWriteLock;
 import com.toolsoft.client.TouristAttractionFinder;
@@ -12,10 +11,9 @@ import com.toolsoft.dao.LoginDao;
 import com.toolsoft.dao.LoginDaoSql;
 import com.toolsoft.dao.ReviewDao;
 import com.toolsoft.dao.ReviewDaoSql;
-import java.beans.PropertyVetoException;
-import java.io.IOException;
-import javax.inject.Singleton;
-import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * Specifies the required instances that need to be injected into the classes.
@@ -36,15 +34,8 @@ public class HotelModule extends AbstractModule {
   }
 
   @Provides
-  @Singleton
-  DataSource providesPooledDataSource() throws IOException, PropertyVetoException {
-    ComboPooledDataSource cpds = new ComboPooledDataSource();
-    cpds.setDriverClass(DRIVER);
-    cpds.setJdbcUrl(URL);
-    cpds.setMinPoolSize(2);
-    cpds.setAcquireIncrement(1);
-    cpds.setMaxPoolSize(8);
-    cpds.setMaxStatements(100);
-    return cpds;
+  Connection providesConnection() throws ClassNotFoundException, SQLException {
+    Class.forName(DRIVER);
+    return DriverManager.getConnection(URL);
   }
 }

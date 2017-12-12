@@ -3,6 +3,7 @@ package com.toolsoft.dao;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.toolsoft.model.Review;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,7 +12,6 @@ import java.util.Date;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 import javax.inject.Inject;
-import javax.sql.DataSource;
 
 /**
  * Data Access Object to work with {@link Review} instances in a RDBMS.
@@ -30,17 +30,17 @@ public final class ReviewDaoSql implements ReviewDao {
   private static final Logger log = Logger.getLogger(ReviewDaoSql.class.getName());
   private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-  private final DataSource dataSource;
+  private final Connection connection;
 
   @Inject
-  public ReviewDaoSql(DataSource dataSource) {
-    this.dataSource = checkNotNull(dataSource);
+  public ReviewDaoSql(Connection connection) {
+    this.connection = checkNotNull(connection);
   }
 
   @Override
   public void create(Review review) {
     try (
-        PreparedStatement statement = dataSource.getConnection().prepareStatement(CREATE_REVIEW);
+        PreparedStatement statement = connection.prepareStatement(CREATE_REVIEW);
     ) {
       statement.setInt(1, Integer.valueOf(review.reviewId()));
       statement.setInt(2, review.rating());
@@ -59,7 +59,7 @@ public final class ReviewDaoSql implements ReviewDao {
   @Override
   public void update(Review review) {
     try (
-        PreparedStatement statement = dataSource.getConnection().prepareStatement(UPDATE_REVIEW);
+        PreparedStatement statement = connection.prepareStatement(UPDATE_REVIEW);
     ) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
       java.util.Date newDate = new Date();
@@ -80,7 +80,7 @@ public final class ReviewDaoSql implements ReviewDao {
   public void delete(String reviewId) {
     System.out.println("Delete");
     try (
-        PreparedStatement statement = dataSource.getConnection().prepareStatement(DELET_REVIEW);
+        PreparedStatement statement = connection.prepareStatement(DELET_REVIEW);
     ) {
       statement.setString(1, reviewId);
       int results = statement.executeUpdate();
@@ -94,7 +94,7 @@ public final class ReviewDaoSql implements ReviewDao {
   public TreeSet<Review> get(int hotelId) {
     TreeSet<Review> reviewTreeSet = new TreeSet<>();
     try (
-        PreparedStatement statement = dataSource.getConnection().prepareStatement(GET_REVIEW);
+        PreparedStatement statement = connection.prepareStatement(GET_REVIEW);
     ) {
       statement.setInt(1, hotelId);
       ResultSet results = statement.executeQuery();

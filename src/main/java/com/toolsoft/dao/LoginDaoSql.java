@@ -4,12 +4,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
 import javax.inject.Inject;
-import javax.sql.DataSource;
 
 /**
  * Data Access Object to provide auth capabilities using a RDBMS.
@@ -58,11 +58,11 @@ public final class LoginDaoSql implements LoginDao {
   private static final String DELETE_SQL =
       "DELETE FROM users WHERE username = ?";
   private final Random random = new Random(System.currentTimeMillis());
-  private final DataSource dataSource;
+  private final Connection connection;
 
   @Inject
-  LoginDaoSql(DataSource dataSource) {
-    this.dataSource = checkNotNull(dataSource);
+  LoginDaoSql(Connection connection) {
+    this.connection = checkNotNull(connection);
   }
 
   /**
@@ -107,7 +107,7 @@ public final class LoginDaoSql implements LoginDao {
    * @param user - username to check
    */
   private boolean duplicateUser(String user) throws SQLException {
-    PreparedStatement statement = dataSource.getConnection().prepareStatement(USER_SQL);
+    PreparedStatement statement = connection.prepareStatement(USER_SQL);
     statement.setString(1, user);
     ResultSet results = statement.executeQuery();
     return results.next() ? true : false;
@@ -125,7 +125,7 @@ public final class LoginDaoSql implements LoginDao {
     random.nextBytes(saltBytes);
     String usersalt = encodeHex(saltBytes, 32);
     String passhash = getHash(newpass, usersalt);
-    PreparedStatement statement = dataSource.getConnection().prepareStatement(REGISTER_SQL);
+    PreparedStatement statement = connection.prepareStatement(REGISTER_SQL);
     statement.setString(1, newuser);
     statement.setString(2, passhash);
     statement.setString(3, usersalt);
@@ -142,7 +142,7 @@ public final class LoginDaoSql implements LoginDao {
   @Override
   public void authenticateUser(String username, String password) {
     try (
-        PreparedStatement statement = dataSource.getConnection().prepareStatement(AUTH_SQL);
+        PreparedStatement statement = connection.prepareStatement(AUTH_SQL);
     ) {
       String usersalt = getSalt(username);
       String passhash = getHash(password, usersalt);
@@ -167,7 +167,7 @@ public final class LoginDaoSql implements LoginDao {
   private String getSalt(String user) throws SQLException {
     String salt = null;
     try (
-        PreparedStatement statement = dataSource.getConnection().prepareStatement(SALT_SQL);
+        PreparedStatement statement = connection.prepareStatement(SALT_SQL);
     ) {
       statement.setString(1, user);
       ResultSet results = statement.executeQuery();

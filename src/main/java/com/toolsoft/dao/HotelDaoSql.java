@@ -5,13 +5,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import com.toolsoft.model.Address;
 import com.toolsoft.model.Hotel;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.sql.DataSource;
 
 /**
  * Data Access Object to work with {@link Hotel} instances in a RDBMS.
@@ -23,18 +23,17 @@ public final class HotelDaoSql implements HotelDao {
   private static final String HOTELS_RATING_BY_CITY =
       "SELECT h.*, AVG(r.rating) as rating FROM Hotels h NATURAL JOIN Reviews r "
           + "WHERE city = ? GROUP BY h.hotelId";
-  private final DataSource dataSource;
+  private final Connection connection;
 
   @Inject
-  public HotelDaoSql(DataSource dataSource) {
-    this.dataSource = checkNotNull(dataSource);
+  public HotelDaoSql(Connection connection) {
+    this.connection = checkNotNull(connection);
   }
 
   @Override
   public List<Hotel> getHotelsRatingByCity(String city) {
     ImmutableList.Builder<Hotel> hotels = ImmutableList.builder();
-    try (PreparedStatement ps = dataSource.getConnection()
-        .prepareStatement(HOTELS_RATING_BY_CITY)) {
+    try (PreparedStatement ps = connection.prepareStatement(HOTELS_RATING_BY_CITY)) {
       ps.setString(1, city);
       ResultSet rs = ps.executeQuery();
       while (rs.next()) {
@@ -49,7 +48,7 @@ public final class HotelDaoSql implements HotelDao {
   @Override
   public List<Hotel> getAll() {
     ImmutableList.Builder<Hotel> hotels = ImmutableList.builder();
-    try (ResultSet rs = dataSource.getConnection().prepareStatement(ALL_SQL).executeQuery()) {
+    try (ResultSet rs = connection.prepareStatement(ALL_SQL).executeQuery()) {
       while (rs.next()) {
         hotels.add(toHotel(rs));
       }
@@ -62,7 +61,7 @@ public final class HotelDaoSql implements HotelDao {
   @Override
   public Optional<Hotel> getHotel(String id) {
     Hotel hotel = null;
-    try (PreparedStatement ps = dataSource.getConnection().prepareStatement(ID_SQL)) {
+    try (PreparedStatement ps = connection.prepareStatement(ID_SQL)) {
       ps.setInt(1, Integer.valueOf(id));
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
