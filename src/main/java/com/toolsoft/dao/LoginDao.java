@@ -1,7 +1,5 @@
 package com.toolsoft.dao;
 
-import java.security.MessageDigest;
-
 /**
  * Data Access Object to auth users.
  */
