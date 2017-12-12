@@ -24,6 +24,7 @@ public final class Login extends HttpServlet {
   private static final String SUCCESS = "success";
   private static final String USER = "user";
   private static final String PASS = "pass";
+  private static final int MAX_AGE = 30 * 60;
   private final LoginDao loginDao;
 
   @Inject
@@ -49,9 +50,9 @@ public final class Login extends HttpServlet {
     String pass = request.getParameter(PASS);
     HttpSession httpSession = request.getSession();
     httpSession.setAttribute(USER, user);
-    httpSession.setMaxInactiveInterval(30 * 60);
+    httpSession.setMaxInactiveInterval(MAX_AGE);
     Cookie userName = new Cookie(USER, user);
-    userName.setMaxAge(30 * 60);
+    userName.setMaxAge(MAX_AGE);
     loginDao.authenticateUser(user, pass);
     setCors(response);
     setJsonContentType(response);
