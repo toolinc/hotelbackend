@@ -10,6 +10,8 @@ import com.toolsoft.dao.HotelDao;
 import com.toolsoft.dao.HotelDaoSql;
 import com.toolsoft.dao.LoginDao;
 import com.toolsoft.dao.LoginDaoSql;
+import com.toolsoft.dao.ReviewDao;
+import com.toolsoft.dao.ReviewDaoSql;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import javax.sql.DataSource;
@@ -25,6 +27,7 @@ public class HotelModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(HotelDao.class).to(HotelDaoSql.class);
+    bind(ReviewDao.class).to(ReviewDaoSql.class);
     bind(LoginDao.class).to(LoginDaoSql.class);
     bind(ReentrantReadWriteLock.class);
     bind(HotelCacheThreadSafe.class);
