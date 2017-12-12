@@ -14,6 +14,7 @@ import com.toolsoft.dao.ReviewDao;
 import com.toolsoft.dao.ReviewDaoSql;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 
 /**
@@ -35,6 +36,7 @@ public class HotelModule extends AbstractModule {
   }
 
   @Provides
+  @Singleton
   DataSource providesPooledDataSource() throws IOException, PropertyVetoException {
     ComboPooledDataSource cpds = new ComboPooledDataSource();
     cpds.setDriverClass(DRIVER);
