@@ -1,10 +1,8 @@
-package com.toolsoft;
+package com.toolsoft.smoke;
 
 import com.google.appengine.api.utils.SystemProperty;
-
 import java.io.IOException;
 import java.util.Properties;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "HelloAppEngine", value = "/hello")
 public class HelloAppEngine extends HttpServlet {
+
+  public static String getInfo() {
+    return "Version: " + System.getProperty("java.version")
+        + " OS: " + System.getProperty("os.name")
+        + " User: " + System.getProperty("user.name");
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -22,12 +26,6 @@ public class HelloAppEngine extends HttpServlet {
     response.setContentType("text/plain");
     response.getWriter().println("Hello App Engine - Standard using "
         + SystemProperty.version.get() + " Java " + properties.get("java.specification.version"));
-  }
-
-  public static String getInfo() {
-    return "Version: " + System.getProperty("java.version")
-          + " OS: " + System.getProperty("os.name")
-          + " User: " + System.getProperty("user.name");
   }
 
 }

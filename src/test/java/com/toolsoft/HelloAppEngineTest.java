@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 
+import com.toolsoft.smoke.HelloAppEngine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

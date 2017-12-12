@@ -1,4 +1,4 @@
-package com.toolsoft;
+package com.toolsoft.smoke;
 
 import com.google.common.base.Stopwatch;
 import java.io.IOException;
