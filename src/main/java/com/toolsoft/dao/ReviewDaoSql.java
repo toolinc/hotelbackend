@@ -30,8 +30,8 @@ public final class ReviewDaoSql implements ReviewDao {
   private static final String UPDATE_REVIEW =
       "UPDATE " + TABLE + " SET title= ?, review=?, isRecom=?, rating=?, date=? WHERE reviewId=?;";
   private static final Logger log = Logger.getLogger(ReviewDaoSql.class.getName());
-  private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat(
-      "yyyy-MM-dd'T'HH:mm:ss");
+  private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
+      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   private final DataSource dataSource;
 
   @Inject

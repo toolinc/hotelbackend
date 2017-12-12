@@ -2,8 +2,10 @@ package com.toolsoft.model;
 
 import com.google.auto.value.AutoValue;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
 
 @AutoValue
 public abstract class Review implements Comparable<Review> {
@@ -72,6 +74,7 @@ public abstract class Review implements Comparable<Review> {
   @AutoValue.Builder
   public abstract static class Builder {
 
+    private static final Logger log = Logger.getLogger(Builder.class.getName());
     private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     public abstract Builder setHotelId(String hotelId);
@@ -89,7 +92,12 @@ public abstract class Review implements Comparable<Review> {
     public abstract Builder setDate(Date date);
 
     public final Builder setDate(String date) {
-      return setDate(FORMAT.format(date));
+      try {
+        setDate(FORMAT.parse(date));
+      } catch (ParseException e) {
+        log.severe(date + e.getMessage());
+      }
+      return this;
     }
 
     public abstract Builder setUsername(String username);
