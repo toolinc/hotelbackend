@@ -10,10 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,7 +31,7 @@ public final class TouristAttractionFinder {
   private static final String host = "maps.googleapis.com";
   private static final String path = "/maps/api/place/textsearch/json";
   private static final String FIND_TYPE = "tourist%20attractions+in+";
-  private static final String API_KEY_PATH = "input/ApiKey.txt";
+  private static final String API_KEY = "AIzaSyBhFjxfTNwfFdz1fX-EQRWeEJXwNKixQkk";
   private static final int PORT = 443;
   private static final int MILE_TO_METERS = 1609;
 
@@ -186,7 +183,8 @@ public final class TouristAttractionFinder {
         + "?query=" + FIND_TYPE + ((String) hotel.address().city()).replace(" ", "+")
         + "&location=" + hotel.address().lat() + "," + hotel.address().lon()
         + "&radius=" + radius
-        + "&key=" + getApiKey()
+        + "&key=" + API_KEY
+
         + " HTTP/1.1" + System.lineSeparator()
         + "Host: " + host + System.lineSeparator()
         + "Connection: close" + System.lineSeparator()
@@ -206,7 +204,7 @@ public final class TouristAttractionFinder {
         + "?query=" + FIND_TYPE + ((String) location[2]).replace(" ", "+")
         + "&location=" + location[0] + "," + location[1]
         + "&radius=" + radius
-        + "&key=" + getApiKey()
+        + "&key=" + API_KEY
         + " HTTP/1.1" + System.lineSeparator()
         + "Host: " + host + System.lineSeparator()
         + "Connection: close" + System.lineSeparator()
@@ -238,25 +236,6 @@ public final class TouristAttractionFinder {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  /**
-   * Get the Api Key The method looks in a file called ApiKey format of the file key = ApIkEy
-   *
-   * @return the ApiKey String
-   */
-  private String getApiKey() {
-    String key = "";
-    Path path = Paths.get(API_KEY_PATH);
-    try (BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        key = line.replaceFirst(".*=", "");
-      }
-    } catch (IOException e) {
-      System.out.println(e);
-    }
-    return key.trim();
   }
 
   /**
