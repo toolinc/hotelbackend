@@ -1,6 +1,8 @@
 package com.toolsoft.api;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.toolsoft.api.ResponseUtil.setCors;
+import static com.toolsoft.api.ResponseUtil.setJsonContentType;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -20,7 +22,6 @@ import org.apache.commons.text.StringEscapeUtils;
 @Singleton
 public final class HotelInfo extends HttpServlet {
 
-  private static final String JSON = "application/json";
   private static final String CITY = "city";
   private static final String API = "api";
   private final HotelDao hotelDao;
@@ -35,9 +36,9 @@ public final class HotelInfo extends HttpServlet {
       throws IOException, ServletException {
     String city = city = StringEscapeUtils.escapeHtml4(request.getParameter(CITY));
     String version = request.getParameter(API);
-    response.setContentType(JSON);
-    response.setHeader("Access-Control-Allow-Origin", "*");
     List<Hotel> hotels = hotelDao.getHotelsRatingByCity(city);
+    setCors(response);
+    setJsonContentType(response);
     if (Strings.isNullOrEmpty(version)) {
       response.getWriter().print(oldJson(hotels));
     } else {
