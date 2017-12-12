@@ -4,6 +4,7 @@ import com.google.inject.servlet.ServletModule;
 import com.toolsoft.api.HotelAttractions;
 import com.toolsoft.api.HotelInfo;
 import com.toolsoft.api.Login;
+import com.toolsoft.client.TouristAttractionFinder;
 import com.toolsoft.dao.HotelDao;
 
 /**
@@ -15,6 +16,7 @@ public final class HotelServletModule extends ServletModule {
   @Override
   protected void configureServlets() {
     requireBinding(HotelDao.class);
+    requireBinding(TouristAttractionFinder.class);
     serve("/attractions").with(HotelAttractions.class);
     serve("/hotelInfo").with(HotelInfo.class);
     serve("/login").with(Login.class);

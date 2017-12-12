@@ -1,6 +1,8 @@
 package com.toolsoft.model;
 
 import com.google.auto.value.AutoValue;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @AutoValue
@@ -16,7 +18,7 @@ public abstract class Review implements Comparable<Review> {
 
   public abstract String review();
 
-  public abstract boolean isRecom();
+  public abstract boolean recom();
 
   public abstract Date date();
 
@@ -70,6 +72,8 @@ public abstract class Review implements Comparable<Review> {
   @AutoValue.Builder
   public abstract static class Builder {
 
+    private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
     public abstract Builder setHotelId(String hotelId);
 
     public abstract Builder setReviewId(String reviewId);
@@ -80,9 +84,13 @@ public abstract class Review implements Comparable<Review> {
 
     public abstract Builder setReview(String review);
 
-    public abstract Builder setIsRecom(boolean isRecom);
+    public abstract Builder setRecom(boolean recom);
 
     public abstract Builder setDate(Date date);
+
+    public final Builder setDate(String date) {
+      return setDate(FORMAT.format(date));
+    }
 
     public abstract Builder setUsername(String username);
 
