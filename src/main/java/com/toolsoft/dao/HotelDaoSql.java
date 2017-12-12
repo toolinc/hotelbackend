@@ -92,7 +92,9 @@ public final class HotelDaoSql implements HotelDao {
         .builder()
         .setId(rs.getString("hotelId"))
         .setName(rs.getString("name"))
-        .setAddress(address);
+        .setAddress(address)
+        .setImage(rs.getString("image"))
+        .setLink(rs.getString("link"));
     if (rating) {
       hotel.setRating(Math.round(rs.getDouble("rating") * 100) / 100.0d);
     } else {

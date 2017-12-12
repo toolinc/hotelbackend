@@ -52,6 +52,8 @@ public final class HotelInfo extends HttpServlet {
       sb.append("true," + System.lineSeparator());
       sb.append("\"hotelId\":\"" + hotel.id() + "\"," + System.lineSeparator());
       sb.append("\"name\":\"" + hotel.name() + "\"," + System.lineSeparator());
+      sb.append("\"image\":\"" + hotel.image() + "\"," + System.lineSeparator());
+      sb.append("\"link\":\"" + hotel.link() + "\"," + System.lineSeparator());
       sb.append("\"rating\":\"" + hotel.rating() + "\"," + System.lineSeparator());
       sb.append("\"addr\":\"" + address.streetAddress() + "\"," + System.lineSeparator());
       sb.append("\"city\":\"" + address.city() + "\"," + System.lineSeparator());

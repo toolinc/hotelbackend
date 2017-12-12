@@ -16,6 +16,10 @@ public abstract class Hotel implements Comparable<Hotel> {
 
   public abstract Address address();
 
+  public abstract String image();
+
+  public abstract String link();
+
   public abstract double rating();
 
   /**
@@ -52,6 +56,10 @@ public abstract class Hotel implements Comparable<Hotel> {
     public abstract Builder setName(String name);
 
     public abstract Builder setAddress(Address address);
+
+    public abstract Builder setImage(String image);
+
+    public abstract Builder setLink(String link);
 
     public abstract Builder setRating(double rating);
 
