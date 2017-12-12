@@ -34,16 +34,8 @@ import org.json.simple.parser.ParseException;
 public class HotelCache {
 
   private static final Logger log = Logger.getLogger(HotelCache.class.getName());
-  private Map<String, Hotel> hotels;
-  private Map<String, TreeSet<Review>> reviews;
-
-  /**
-   * Default constructor.
-   */
-  public HotelCache() {
-    hotels = new TreeMap<>();
-    reviews = new TreeMap<>();
-  }
+  private Map<String, Hotel> hotels = new TreeMap<>();
+  private Map<String, TreeSet<Review>> reviews = new TreeMap<>();
 
   /**
    * Create a Hotel given the parameters, and add it to the appropriate data structure.

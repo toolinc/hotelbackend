@@ -1,28 +1,30 @@
 package com.toolsoft.cache;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.toolsoft.model.Address;
 import com.toolsoft.model.Review;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Logger;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Class HotelCacheThreadSafe - extends class HotelCache. Thread-safe, uses ReentrantReadWriteLock
  * to synchronize access to all data structures.
  */
+@Singleton
 public final class HotelCacheThreadSafe extends HotelCache {
 
   private static final Logger log = Logger.getLogger(HotelCacheThreadSafe.class.getName());
-  private ReentrantReadWriteLock lock = null;
+  private final ReentrantReadWriteLock lock;
 
-  /**
-   * Default constructor.
-   */
-  public HotelCacheThreadSafe() {
-    lock = new ReentrantReadWriteLock();
+  @Inject
+  public HotelCacheThreadSafe(ReentrantReadWriteLock lock) {
+    this.lock = checkNotNull(lock);
   }
-
 
   /**
    * Overrides addHotel method from HotelCache class to make it thread-safe; uses the lock. Create a
