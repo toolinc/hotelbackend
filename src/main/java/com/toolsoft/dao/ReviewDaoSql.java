@@ -11,13 +11,11 @@ import java.util.Date;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.sql.DataSource;
 
 /**
  * Data Access Object to work with {@link Review} instances in a RDBMS.
  */
-@Singleton
 public final class ReviewDaoSql implements ReviewDao {
 
   private static final String TABLE = "Reviews";
