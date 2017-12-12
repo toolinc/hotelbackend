@@ -1,8 +1,14 @@
 package com.toolsoft.api;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.toolsoft.api.ResponseUtil.setCors;
+import static com.toolsoft.api.ResponseUtil.setJsonContentType;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
+import com.google.gson.Gson;
 import com.toolsoft.dao.LoginDao;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
@@ -15,27 +21,43 @@ import javax.servlet.http.HttpSession;
 @Singleton
 public final class Login extends HttpServlet {
 
+  private static final String SUCCESS = "success";
+  private static final String USER = "user";
+  private static final String PASS = "pass";
+  private final LoginDao loginDao;
+
   @Inject
-  private LoginDao loginDao;
+  public Login(LoginDao loginDao) {
+    this.loginDao = checkNotNull(loginDao);
+  }
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+    HttpSession httpSession = request.getSession(false);
+    setCors(response);
+    setJsonContentType(response);
+    Builder<Object, Object> builder = ImmutableMap.builder();
+    builder.put(USER, httpSession.getAttribute(USER));
+    response.getWriter().printf(new Gson().toJson(builder.build()));
+  }
+
+  @Override
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    String user = request.getParameter(USER);
+    String pass = request.getParameter(PASS);
     HttpSession httpSession = request.getSession();
-    httpSession.setMaxInactiveInterval(30*60);
-    Cookie userName = new Cookie("user", "jovani");
-    userName.setMaxAge(30*60);
-    response.addCookie(userName);
-
-    String user = request.getParameter("user");
-    String pass = request.getParameter("pass");
-
+    httpSession.setAttribute(USER, user);
+    httpSession.setMaxInactiveInterval(30 * 60);
+    Cookie userName = new Cookie(USER, user);
+    userName.setMaxAge(30 * 60);
     loginDao.authenticateUser(user, pass);
-
-    response.setContentType("application/json");
-    response.setHeader("Access-Control-Allow-Origin", "*");
-    PrintWriter out = response.getWriter();
-    out.printf("sessionId: %s, attrinutes: %s", httpSession.getId(),
-        httpSession.getAttributeNames().hasMoreElements());
+    setCors(response);
+    setJsonContentType(response);
+    Builder<Object, Object> builder = ImmutableMap.builder();
+    builder.put(USER, httpSession.getAttribute(USER))
+        .put(SUCCESS, Boolean.TRUE);
+    response.getWriter().printf(new Gson().toJson(builder.build()));
   }
 }
