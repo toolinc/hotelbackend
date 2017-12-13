@@ -29,6 +29,7 @@ public final class Login extends HttpServlet {
   private static final String USER = "username";
   private static final String PASS = "password";
   private static final String LAST_LOGIN = "lastLogin";
+  private static final String SESSION = "JSESSIONID";
   private static final int MAX_AGE = 30 * 60;
   private final LoginDao loginDao;
 
@@ -62,7 +63,8 @@ public final class Login extends HttpServlet {
     addCookie(response, USER, user);
     addCookie(response, LAST_LOGIN, FORMAT.format(lastLogin));
     Builder<Object, Object> builder = ImmutableMap.builder();
-    builder.put(USER, httpSession.getAttribute(USER))
+    builder.put(SESSION, httpSession.getId())
+        .put(USER, httpSession.getAttribute(USER))
         .put(LAST_LOGIN, lastLogin)
         .put(SUCCESS, Boolean.TRUE);
     response.getWriter().printf(new Gson().toJson(builder.build()));
