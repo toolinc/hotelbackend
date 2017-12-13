@@ -7,6 +7,8 @@ import com.toolsoft.cache.ReentrantReadWriteLock;
 import com.toolsoft.client.TouristAttractionFinder;
 import com.toolsoft.dao.HotelDao;
 import com.toolsoft.dao.HotelDaoSql;
+import com.toolsoft.dao.HotelLikeDao;
+import com.toolsoft.dao.HotelLikeDaoSql;
 import com.toolsoft.dao.LoginDao;
 import com.toolsoft.dao.LoginDaoSql;
 import com.toolsoft.dao.ReviewDao;
@@ -26,8 +28,9 @@ public class HotelModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(HotelDao.class).to(HotelDaoSql.class);
-    bind(ReviewDao.class).to(ReviewDaoSql.class);
+    bind(HotelLikeDao.class).to(HotelLikeDaoSql.class);
     bind(LoginDao.class).to(LoginDaoSql.class);
+    bind(ReviewDao.class).to(ReviewDaoSql.class);
     bind(ReentrantReadWriteLock.class);
     bind(HotelCacheThreadSafe.class);
     bind(TouristAttractionFinder.class);
