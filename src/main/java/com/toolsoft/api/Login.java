@@ -22,8 +22,8 @@ import javax.servlet.http.HttpSession;
 public final class Login extends HttpServlet {
 
   private static final String SUCCESS = "success";
-  private static final String USER = "user";
-  private static final String PASS = "pass";
+  private static final String USER = "username";
+  private static final String PASS = "password";
   private static final int MAX_AGE = 30 * 60;
   private final LoginDao loginDao;
 
