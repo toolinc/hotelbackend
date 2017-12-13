@@ -9,6 +9,9 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
 import com.toolsoft.dao.LoginDao;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
@@ -21,9 +24,11 @@ import javax.servlet.http.HttpSession;
 @Singleton
 public final class Login extends HttpServlet {
 
+  private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   private static final String SUCCESS = "success";
   private static final String USER = "username";
   private static final String PASS = "password";
+  private static final String LAST_LOGIN = "lastLogin";
   private static final int MAX_AGE = 30 * 60;
   private final LoginDao loginDao;
 
@@ -51,14 +56,21 @@ public final class Login extends HttpServlet {
     HttpSession httpSession = request.getSession();
     httpSession.setAttribute(USER, user);
     httpSession.setMaxInactiveInterval(MAX_AGE);
-    Cookie userName = new Cookie(USER, user);
-    userName.setMaxAge(MAX_AGE);
-    loginDao.authenticateUser(user, pass);
+    Date lastLogin = loginDao.authenticateUser(user, pass);
     setCors(response);
     setJsonContentType(response);
+    addCookie(response, USER, user);
+    addCookie(response, LAST_LOGIN, FORMAT.format(lastLogin));
     Builder<Object, Object> builder = ImmutableMap.builder();
     builder.put(USER, httpSession.getAttribute(USER))
+        .put(LAST_LOGIN, lastLogin)
         .put(SUCCESS, Boolean.TRUE);
     response.getWriter().printf(new Gson().toJson(builder.build()));
+  }
+
+  private static final void addCookie(HttpServletResponse response, String name, String value) {
+    Cookie cookie = new Cookie(name, value);
+    cookie.setMaxAge(MAX_AGE);
+    response.addCookie(cookie);
   }
 }

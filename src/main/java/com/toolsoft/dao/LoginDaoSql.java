@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Random;
 import javax.inject.Inject;
 
@@ -21,15 +22,6 @@ public final class LoginDaoSql implements LoginDao {
    */
   private static final String TABLES_SQL =
       "SHOW TABLES LIKE 'users';";
-  /**
-   * Used to create necessary tables for this example.
-   */
-  private static final String CREATE_SQL =
-      "CREATE TABLE users (" +
-          "userid INTEGER AUTO_INCREMENT PRIMARY KEY, " +
-          "username VARCHAR(32) NOT NULL UNIQUE, " +
-          "password CHAR(64) NOT NULL, " +
-          "usersalt CHAR(32) NOT NULL);";
   /**
    * Used to insert a new user into the database.
    */
@@ -50,8 +42,10 @@ public final class LoginDaoSql implements LoginDao {
    * Used to authenticate a user.
    */
   private static final String AUTH_SQL =
-      "SELECT username FROM users " +
+      "SELECT username, lastlogin  FROM users " +
           "WHERE username = ? AND password = ?";
+  private static final String UPDATE_LAST_LOGIN =
+      "UPDATE users SET lastlogin = NOW() WHERE username = ?";
   /**
    * Used to remove a user from the database.
    */
@@ -140,7 +134,7 @@ public final class LoginDaoSql implements LoginDao {
    * @param password - password to authenticate
    */
   @Override
-  public void authenticateUser(String username, String password) {
+  public Date authenticateUser(String username, String password) {
     try (
         PreparedStatement statement = connection.prepareStatement(AUTH_SQL);
     ) {
@@ -151,9 +145,23 @@ public final class LoginDaoSql implements LoginDao {
       ResultSet results = statement.executeQuery();
       if (!results.next()) {
         throw new IllegalStateException("Unable to find the user.");
+      } else {
+        updateLastLogin(username);
+        return results.getTimestamp("lastlogin");
       }
     } catch (SQLException e) {
       throw new IllegalStateException("Unable to authenticate the user.", e);
+    }
+  }
+
+  private void updateLastLogin(String username) {
+    try (
+        PreparedStatement statement = connection.prepareStatement(UPDATE_LAST_LOGIN);
+    ) {
+      statement.setString(1, username);
+      statement.executeUpdate();
+    } catch (SQLException e) {
+      throw new IllegalStateException("Unable to update the last login of the user.", e);
     }
   }
 

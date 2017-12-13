@@ -1,5 +1,7 @@
 package com.toolsoft.dao;
 
+import java.util.Date;
+
 /**
  * Data Access Object to auth users.
  */
@@ -12,7 +14,7 @@ public interface LoginDao {
    * @param username - username to authenticate
    * @param password - password to authenticate
    */
-  void authenticateUser(String username, String password);
+  Date authenticateUser(String username, String password);
 
   /**
    * Registers a new user, placing the username, password hash, and salt into the database if the
