@@ -1,9 +1,9 @@
 package com.toolsoft.dao;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.toolsoft.dao.DaoUtil.toHotel;
 
 import com.google.common.collect.ImmutableList;
-import com.toolsoft.model.Address;
 import com.toolsoft.model.Hotel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -71,32 +71,5 @@ public final class HotelDaoSql implements HotelDao {
       throw new IllegalStateException("SQL error", e);
     }
     return Optional.ofNullable(hotel);
-  }
-
-  private static final Hotel toHotel(ResultSet rs) throws SQLException {
-    return toHotel(rs, false);
-  }
-
-  private static final Hotel toHotel(ResultSet rs, boolean rating) throws SQLException {
-    Address address = Address.builder()
-        .setStreetAddress(rs.getString("streetAddress"))
-        .setCity(rs.getString("city"))
-        .setState(rs.getString("state"))
-        .setLat(rs.getDouble("lat"))
-        .setLon(rs.getDouble("lon"))
-        .build();
-    Hotel.Builder hotel = Hotel
-        .builder()
-        .setId(rs.getString("hotelId"))
-        .setName(rs.getString("name"))
-        .setAddress(address)
-        .setImage(rs.getString("image"))
-        .setLink(rs.getString("link"));
-    if (rating) {
-      hotel.setRating(Math.round(rs.getDouble("rating") * 100) / 100.0d);
-    } else {
-      hotel.setRating(0);
-    }
-    return hotel.build();
   }
 }

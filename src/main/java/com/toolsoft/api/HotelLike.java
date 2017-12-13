@@ -1,15 +1,19 @@
 package com.toolsoft.api;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.toolsoft.api.ResponseUtil.hotelsToJson;
 import static com.toolsoft.api.ResponseUtil.setCors;
 import static com.toolsoft.api.ResponseUtil.setJsonContentType;
 
+import com.google.auto.value.AutoValue;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
 import com.toolsoft.dao.HotelLikeDao;
+import com.toolsoft.model.Hotel;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,22 +38,59 @@ public final class HotelLike extends HttpServlet {
   }
 
   @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws IOException, ServletException {
+    setCors(response);
+    setJsonContentType(response);
+    Builder<Object, Object> builder = ImmutableMap.builder();
+    Optional<String> user = Optional
+        .ofNullable(StringEscapeUtils.escapeHtml4(request.getParameter(USER)));
+    if (user.isPresent()) {
+      try {
+        List<Hotel> hotels = hotelLikeDao.get(user.get());
+        response.getWriter().print(hotelsToJson(hotels));
+      } catch (IllegalStateException exc) {
+        builder.put(SUCCESS, Boolean.FALSE)
+            .put(MESSAGE, exc.getMessage());
+        response.getWriter().printf(new Gson().toJson(builder.build()));
+      }
+    } else {
+      builder.put(SUCCESS, Boolean.FALSE)
+          .put(MESSAGE, "User is empty.");
+      response.getWriter().printf(new Gson().toJson(builder.build()));
+    }
+  }
+
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
+    Builder<Object, Object> builder = ImmutableMap.builder();
+    Optional<Like> like = createLike(request, builder);
+    if (like.isPresent()) {
+      try {
+        hotelLikeDao.store(like.get().hotelId(), like.get().user());
+        builder.put(SUCCESS, Boolean.TRUE)
+            .put(MESSAGE, String.format("A new hotel %s was added.", like.get().hotelId()));
+      } catch (IllegalStateException exc) {
+        builder.put(SUCCESS, Boolean.FALSE)
+            .put(MESSAGE, String.format("%s", exc.getMessage()));
+      }
+    }
+    setCors(response);
+    setJsonContentType(response);
+    response.getWriter().printf(new Gson().toJson(builder.build()));
+  }
+
+  private static final Optional<Like> createLike(HttpServletRequest request,
+      Builder<Object, Object> builder) {
     Optional<String> user = Optional
         .ofNullable(StringEscapeUtils.escapeHtml4(request.getParameter(USER)));
     Optional<String> hotel = Optional
         .ofNullable(StringEscapeUtils.escapeHtml4(request.getParameter(HOTEL)));
-    Builder<Object, Object> builder = ImmutableMap.builder();
     if (user.isPresent() && hotel.isPresent() && !Strings.isNullOrEmpty(user.get()) && !Strings
         .isNullOrEmpty(hotel.get())) {
       try {
-        hotelLikeDao.store(Integer.valueOf(hotel.get()), user.get());
-        builder.put(SUCCESS, Boolean.TRUE)
-            .put(MESSAGE, String.format("A new hotel %s was added.", hotel.get()));
-      } catch (IllegalStateException exc) {
-        builder.put(SUCCESS, Boolean.FALSE)
-            .put(MESSAGE, String.format("%s", exc.getMessage()));
+        return Optional.of(Like.create(user.get(), Integer.valueOf(hotel.get())));
       } catch (NumberFormatException exc) {
         builder.put(SUCCESS, Boolean.FALSE)
             .put(MESSAGE, "HotelId is not a number.");
@@ -58,8 +99,18 @@ public final class HotelLike extends HttpServlet {
       builder.put(SUCCESS, Boolean.FALSE)
           .put(MESSAGE, "User or Hotel is empty.");
     }
-    setCors(response);
-    setJsonContentType(response);
-    response.getWriter().printf(new Gson().toJson(builder.build()));
+    return Optional.empty();
+  }
+
+  @AutoValue
+  static abstract class Like {
+
+    abstract String user();
+
+    abstract int hotelId();
+
+    static Like create(String user, int hotelId) {
+      return new AutoValue_HotelLike_Like(user, hotelId);
+    }
   }
 }

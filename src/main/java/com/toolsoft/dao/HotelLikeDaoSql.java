@@ -1,11 +1,15 @@
 package com.toolsoft.dao;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.toolsoft.dao.DaoUtil.toHotel;
 
+import com.google.common.collect.ImmutableList;
 import com.toolsoft.model.Hotel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 
@@ -20,6 +24,12 @@ public final class HotelLikeDaoSql implements HotelLikeDao {
   private static final String INSERT_SQL =
       "INSERT INTO SavedHotels (users_userid, Hotels_hotelId) VALUES (%s, ?);";
   private static final String STORE_SQL = String.format(INSERT_SQL, FIND_USER);
+  private static final String GET_SQL =
+      "SELECT h.*, AVG(r.rating) as rating "
+          + "FROM SavedHotels sh INNER JOIN Hotels h ON (sh.Hotels_hotelId = h.hotelId) "
+          + "INNER JOIN Reviews r ON (h.hotelId = r.hotelId) "
+          + "INNER JOIN users u ON (sh.users_userid = u.userid) "
+          + "WHERE u.username = ? GROUP BY h.hotelId";
   private final Connection connection;
 
   @Inject
@@ -38,5 +48,20 @@ public final class HotelLikeDaoSql implements HotelLikeDao {
       throw new IllegalStateException(
           String.format("Unable to store the hotel\n%s.", e.getMessage()), e);
     }
+  }
+
+  @Override
+  public List<Hotel> get(String user) {
+    ImmutableList.Builder<Hotel> hotels = ImmutableList.builder();
+    try (PreparedStatement ps = connection.prepareStatement(GET_SQL)) {
+      ps.setString(1, user);
+      ResultSet rs = ps.executeQuery();
+      while (rs.next()) {
+        hotels.add(toHotel(rs, true));
+      }
+    } catch (SQLException e) {
+      throw new IllegalStateException("SQL error", e);
+    }
+    return hotels.build();
   }
 }
