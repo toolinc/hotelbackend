@@ -46,11 +46,26 @@ public final class Login extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    HttpSession httpSession = request.getSession(false);
+//    HttpSession httpSession = request.getSession(false);
+//    setCors(response);
+//    setJsonContentType(response);
+//    Builder<Object, Object> builder = ImmutableMap.builder();
+//    builder.put(USER, httpSession.getAttribute(USER));
+//    response.getWriter().printf(new Gson().toJson(builder.build()));
+    Builder<Object, Object> builder = ImmutableMap.builder();
+    Optional<Auth> auth = createAuth(request, builder);
+    if (auth.isPresent()) {
+      try {
+        loginDao.registerUser(auth.get().user(), auth.get().password());
+        builder.put(SUCCESS, Boolean.TRUE)
+                .put(MESSAGE, String.format("A new user %s was created.", auth.get().user()));
+      } catch (IllegalStateException exc) {
+        builder.put(SUCCESS, Boolean.FALSE)
+                .put(MESSAGE, String.format("%s", exc.getMessage()));
+      }
+    }
     setCors(response);
     setJsonContentType(response);
-    Builder<Object, Object> builder = ImmutableMap.builder();
-    builder.put(USER, httpSession.getAttribute(USER));
     response.getWriter().printf(new Gson().toJson(builder.build()));
   }
 
@@ -80,25 +95,25 @@ public final class Login extends HttpServlet {
     response.getWriter().printf(new Gson().toJson(builder.build()));
   }
 
-  @Override
-  protected void doPut(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    Builder<Object, Object> builder = ImmutableMap.builder();
-    Optional<Auth> auth = createAuth(request, builder);
-    if (auth.isPresent()) {
-      try {
-        loginDao.registerUser(auth.get().user(), auth.get().password());
-        builder.put(SUCCESS, Boolean.TRUE)
-            .put(MESSAGE, String.format("A new user %s was created.", auth.get().user()));
-      } catch (IllegalStateException exc) {
-        builder.put(SUCCESS, Boolean.FALSE)
-            .put(MESSAGE, String.format("%s", exc.getMessage()));
-      }
-    }
-    setCors(response);
-    setJsonContentType(response);
-    response.getWriter().printf(new Gson().toJson(builder.build()));
-  }
+//  @Override
+//  protected void doPut(HttpServletRequest request, HttpServletResponse response)
+//      throws ServletException, IOException {
+//    Builder<Object, Object> builder = ImmutableMap.builder();
+//    Optional<Auth> auth = createAuth(request, builder);
+//    if (auth.isPresent()) {
+//      try {
+//        loginDao.registerUser(auth.get().user(), auth.get().password());
+//        builder.put(SUCCESS, Boolean.TRUE)
+//            .put(MESSAGE, String.format("A new user %s was created.", auth.get().user()));
+//      } catch (IllegalStateException exc) {
+//        builder.put(SUCCESS, Boolean.FALSE)
+//            .put(MESSAGE, String.format("%s", exc.getMessage()));
+//      }
+//    }
+//    setCors(response);
+//    setJsonContentType(response);
+//    response.getWriter().printf(new Gson().toJson(builder.build()));
+//  }
 
   private static final Optional<Auth> createAuth(HttpServletRequest request,
       Builder<Object, Object> builder) {
