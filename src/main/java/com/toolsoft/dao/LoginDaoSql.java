@@ -26,8 +26,8 @@ public final class LoginDaoSql implements LoginDao {
    * Used to insert a new user into the database.
    */
   private static final String REGISTER_SQL =
-      "INSERT INTO users (username, password, usersalt) " +
-          "VALUES (?, ?, ?);";
+      "INSERT INTO users (username, password, usersalt, lastlogin) " +
+          "VALUES (?, ?, ?, now());";
   /**
    * Used to determine if a username already exists.
    */
@@ -75,10 +75,10 @@ public final class LoginDaoSql implements LoginDao {
     try {
       // if okay so far, try to insert new user
       if (duplicateUser(newuser)) {
-        throw new IllegalStateException("");
+        throw new IllegalStateException("User already exist.");
       }
       if (registerNewUser(newuser, newpass) != 1) {
-        throw new IllegalStateException("");
+        throw new IllegalStateException("Unable to signup the user.");
       }
     } catch (SQLException ex) {
       throw new IllegalStateException("Unable to register the user.", ex);
