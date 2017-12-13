@@ -13,6 +13,8 @@ import com.toolsoft.dao.LoginDao;
 import com.toolsoft.dao.LoginDaoSql;
 import com.toolsoft.dao.ReviewDao;
 import com.toolsoft.dao.ReviewDaoSql;
+import com.toolsoft.dao.ReviewLikeDao;
+import com.toolsoft.dao.ReviewLikeDaoSql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,6 +33,7 @@ public class HotelModule extends AbstractModule {
     bind(HotelLikeDao.class).to(HotelLikeDaoSql.class);
     bind(LoginDao.class).to(LoginDaoSql.class);
     bind(ReviewDao.class).to(ReviewDaoSql.class);
+    bind(ReviewLikeDao.class).to(ReviewLikeDaoSql.class);
     bind(ReentrantReadWriteLock.class);
     bind(HotelCacheThreadSafe.class);
     bind(TouristAttractionFinder.class);
