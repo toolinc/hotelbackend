@@ -25,7 +25,6 @@ import javax.servlet.http.HttpSession;
 public final class Login extends HttpServlet {
 
   private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-  private static final String SUCCESS = "success";
   private static final String USER = "username";
   private static final String PASS = "password";
   private static final String LAST_LOGIN = "lastLogin";
@@ -65,8 +64,7 @@ public final class Login extends HttpServlet {
     Builder<Object, Object> builder = ImmutableMap.builder();
     builder.put(SESSION, httpSession.getId())
         .put(USER, httpSession.getAttribute(USER))
-        .put(LAST_LOGIN, lastLogin)
-        .put(SUCCESS, Boolean.TRUE);
+        .put(LAST_LOGIN, lastLogin);
     response.getWriter().printf(new Gson().toJson(builder.build()));
   }
 
