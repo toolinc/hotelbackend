@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @AutoValue
@@ -25,6 +26,8 @@ public abstract class Review implements Comparable<Review> {
   public abstract Date date();
 
   public abstract String username();
+
+  public abstract int votes();
 
   /**
    * Compares this review with the review passed as a parameter based on the dates (more recent date
@@ -68,7 +71,7 @@ public abstract class Review implements Comparable<Review> {
   }
 
   public static Builder builder() {
-    return new AutoValue_Review.Builder();
+    return new AutoValue_Review.Builder().setVotes(0);
   }
 
   @AutoValue.Builder
@@ -101,6 +104,8 @@ public abstract class Review implements Comparable<Review> {
     }
 
     public abstract Builder setUsername(String username);
+
+    public abstract Builder setVotes(int votes);
 
     public abstract Review build();
   }

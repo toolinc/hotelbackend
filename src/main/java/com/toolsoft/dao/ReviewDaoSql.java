@@ -19,8 +19,9 @@ import javax.inject.Inject;
 public final class ReviewDaoSql implements ReviewDao {
 
   private static final String TABLE = "Reviews";
-  private static final String GET_REVIEW =
-      "SELECT r.*, username FROM users NATURAL JOIN " + TABLE + " r WHERE hotelId = ?";
+  private static final String GET_REVIEW = "SELECT r.*, username, "
+      + "(SELECT count(*)  FROM LikeReviews lr  WHERE lr.reviews_reviewId = r.reviewId) as votes "
+      + "FROM users u INNER JOIN Reviews r ON (u.userid = r.userid) WHERE hotelId = ?";
   private static final String DELET_REVIEW = "DELETE FROM " + TABLE + " WHERE reviewId = ?";
   private static final String CREATE_REVIEW = "INSERT INTO " + TABLE
       + " (hotelId, rating, title, review, isRecom, date, userId) VALUES (?, ?, ?, ?, ?, ?, " +
@@ -108,6 +109,7 @@ public final class ReviewDaoSql implements ReviewDao {
             .setRecom(false)
             .setDate(results.getString("date"))
             .setUsername(results.getString("username"))
+            .setVotes(results.getInt("votes"))
             .build();
         reviewTreeSet.add(review);
       }

@@ -79,6 +79,7 @@ public final class HotelReviews extends HttpServlet {
         sb.append("\"reviewText\":\"" + review.review() + "\"," + System.lineSeparator());
         sb.append("\"date\":\"" + review.date() + "\"," + System.lineSeparator());
         sb.append("\"rating\":\"" + review.rating() + "\"," + System.lineSeparator());
+        sb.append("\"votes\":\"" + review.votes() + "\"," + System.lineSeparator());
         sb.append("\"isRecom\":\"" + review.recom() + "\"" + System.lineSeparator());
         count++;
         if (!iterator.hasNext() || count == numReviews.get()) {
