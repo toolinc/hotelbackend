@@ -29,6 +29,8 @@ public final class Login extends HttpServlet {
   private static final String PASS = "password";
   private static final String LAST_LOGIN = "lastLogin";
   private static final String SESSION = "JSESSIONID";
+  private static final String SUCCESS = "success";
+  private static final String MESSAGE = "message";
   private static final int MAX_AGE = 30 * 60;
   private final LoginDao loginDao;
 
@@ -56,15 +58,20 @@ public final class Login extends HttpServlet {
     HttpSession httpSession = request.getSession();
     httpSession.setAttribute(USER, user);
     httpSession.setMaxInactiveInterval(MAX_AGE);
-    Date lastLogin = loginDao.authenticateUser(user, pass);
+    Builder<Object, Object> builder = ImmutableMap.builder();
+    try {
+      Date lastLogin = loginDao.authenticateUser(user, pass);
+      builder.put(SESSION, httpSession.getId())
+          .put(USER, httpSession.getAttribute(USER))
+          .put(LAST_LOGIN, lastLogin);
+      addCookie(response, USER, user);
+      addCookie(response, LAST_LOGIN, FORMAT.format(lastLogin));
+    } catch (IllegalStateException exc) {
+      builder.put(SUCCESS, Boolean.FALSE)
+          .put(MESSAGE, String.format("Unable to authenticate user %s.", user));
+    }
     setCors(response);
     setJsonContentType(response);
-    addCookie(response, USER, user);
-    addCookie(response, LAST_LOGIN, FORMAT.format(lastLogin));
-    Builder<Object, Object> builder = ImmutableMap.builder();
-    builder.put(SESSION, httpSession.getId())
-        .put(USER, httpSession.getAttribute(USER))
-        .put(LAST_LOGIN, lastLogin);
     response.getWriter().printf(new Gson().toJson(builder.build()));
   }
 
