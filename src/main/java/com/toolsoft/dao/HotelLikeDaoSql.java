@@ -16,7 +16,7 @@ import javax.inject.Inject;
 public final class HotelLikeDaoSql implements HotelLikeDao {
 
   private static final Logger log = Logger.getLogger(HotelLikeDaoSql.class.getName());
-  private static final String FIND_USER = "SELECT userid FROM users WHERE username = ?";
+  private static final String FIND_USER = "(SELECT userid FROM users WHERE username = ?)";
   private static final String INSERT_SQL =
       "INSERT INTO SavedHotels (users_userid, Hotels_hotelId) VALUES (%s, ?);";
   private static final String STORE_SQL = String.format(INSERT_SQL, FIND_USER);
@@ -35,7 +35,8 @@ public final class HotelLikeDaoSql implements HotelLikeDao {
       statement.executeUpdate();
     } catch (SQLException e) {
       log.severe(e.getMessage());
-      throw new IllegalStateException("Unable to store the hotel.", e);
+      throw new IllegalStateException(
+          String.format("Unable to store the hotel\n%s.", e.getMessage()), e);
     }
   }
 }
