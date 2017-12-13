@@ -88,9 +88,11 @@ public final class Login extends HttpServlet {
     if (auth.isPresent()) {
       try {
         loginDao.registerUser(auth.get().user(), auth.get().password());
+        builder.put(SUCCESS, Boolean.TRUE)
+            .put(MESSAGE, String.format("A new user %s was created.", auth.get().user()));
       } catch (IllegalStateException exc) {
         builder.put(SUCCESS, Boolean.FALSE)
-            .put(MESSAGE, String.format("%s.", exc.getMessage()));
+            .put(MESSAGE, String.format("%s", exc.getMessage()));
       }
     }
     setCors(response);
