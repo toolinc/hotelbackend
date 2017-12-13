@@ -82,6 +82,14 @@ public final class HotelLike extends HttpServlet {
   }
 
   @Override
+  public void doOptions(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    resp.setHeader("Access-Control-Allow-Origin", "*");
+    resp.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
+    resp.setHeader("Access-Control-Allow-Headers", "GET, POST, DELETE");
+  }
+
+  @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
     setCors(response);
