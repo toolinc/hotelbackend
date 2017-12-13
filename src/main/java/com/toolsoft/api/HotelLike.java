@@ -81,6 +81,30 @@ public final class HotelLike extends HttpServlet {
     response.getWriter().printf(new Gson().toJson(builder.build()));
   }
 
+  @Override
+  public void doDelete(HttpServletRequest request, HttpServletResponse response)
+      throws IOException, ServletException {
+    setCors(response);
+    setJsonContentType(response);
+    Builder<Object, Object> builder = ImmutableMap.builder();
+    Optional<String> user = Optional
+        .ofNullable(StringEscapeUtils.escapeHtml4(request.getParameter(USER)));
+    if (user.isPresent()) {
+      try {
+        int removed = hotelLikeDao.remove(user.get());
+        builder.put(SUCCESS, Boolean.TRUE)
+            .put(MESSAGE, String.format("#%d Hotels were removed.", removed));
+      } catch (IllegalStateException exc) {
+        builder.put(SUCCESS, Boolean.FALSE)
+            .put(MESSAGE, exc.getMessage());
+      }
+    } else {
+      builder.put(SUCCESS, Boolean.FALSE)
+          .put(MESSAGE, "User is empty.");
+    }
+    response.getWriter().printf(new Gson().toJson(builder.build()));
+  }
+
   private static final Optional<Like> createLike(HttpServletRequest request,
       Builder<Object, Object> builder) {
     Optional<String> user = Optional

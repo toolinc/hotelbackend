@@ -14,6 +14,11 @@ public interface HotelLikeDao {
   void store(int hotelId, String user);
 
   /**
+   * Delete all the liked hotels for a given user.
+   */
+  int remove(String user);
+
+  /**
    * Retrieve a list of hotels liked for a given user.
    */
   List<Hotel> get(String user);
